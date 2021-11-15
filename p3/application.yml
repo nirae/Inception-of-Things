@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  labels:
+    app: iotplayground
+  name: iotplayground-app
+spec:
+  project: iotplayground-project
+  source:
+    repoURL: https://github.com/nirae/IoT-playground
+    targetRevision: HEAD
+    path: app
+    directory:
+      recurse: true
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: dev
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true

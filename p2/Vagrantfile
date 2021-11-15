@@ -1,0 +1,34 @@
+Vagrant.configure(2) do |config|
+    $common = <<-SHELL
+    sudo yum -y install vim tree net-tools telnet git python3
+    sudo echo "autocmd filetype yaml setlocal ai ts=2 sw=2 et" > /home/vagrant/.vimrc
+    sudo echo "alias python=/usr/bin/python3" >> /home/vagrant/.bashrc
+    sed -i 's/ChallengeResponseAuthentication no/ChallengeResponseAuthentication yes/g' /etc/ssh/sshd_config
+    sudo systemctl restart sshd
+
+    sudo curl -sfL https://get.k3s.io | sh -
+    sudo sed '/    server \/a     --flannel-iface "eth1"' /etc/systemd/system/k3s.service
+    sudo systemctl daemon-reload
+    sudo systemctl restart k3s
+    chmod 644 /etc/rancher/k3s/k3s.yaml
+
+    SHELL
+
+    config.vm.box = "centos/8"
+
+    # config.vbguest.auto_update = false
+
+    config.vm.define "k3s" do |control|
+        control.vm.hostname = "k3s"
+        control.vm.network "private_network", ip: "192.168.42.110"
+        control.vm.provider "virtualbox" do |v|
+            v.customize ["modifyvm", :id, "--cpus", "1"]
+            v.customize ["modifyvm", :id, "--memory", "1024"]
+            v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+            v.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
+            v.customize ["modifyvm", :id, "--name", "k3sp2"]
+        end
+        config.vm.provision "shell", inline: $common
+    end
+end
+  
