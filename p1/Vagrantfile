@@ -1,11 +1,4 @@
 Vagrant.configure(2) do |config|
-    $common = <<-SHELL
-    sudo yum -y install vim tree net-tools telnet git python3
-    sudo echo "alias python=/usr/bin/python3" >> /home/vagrant/.bashrc
-    sed -i 's/ChallengeResponseAuthentication no/ChallengeResponseAuthentication yes/g' /etc/ssh/sshd_config
-    sudo systemctl restart sshd
-    SHELL
-
     config.vm.box = "centos/8"
 
     config.vm.define "ndubouilS" do |control|
@@ -18,7 +11,6 @@ Vagrant.configure(2) do |config|
             v.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
             v.customize ["modifyvm", :id, "--name", "p1-ndubouilS"]
         end
-        # config.vm.provision "shell", inline: $common
         control.vm.provision "shell", path: "install_server.sh"
         control.trigger.after :up do |trigger|
             trigger.info = "Rsync local files"
@@ -39,7 +31,6 @@ Vagrant.configure(2) do |config|
             v.customize ["modifyvm", :id, "--name", "p1-ndubouilSW"]
         end
         control.vm.provision "shell", path: "install_worker.sh"
-        # config.vm.provision :shell, :inline => $common
     end
 end
   
