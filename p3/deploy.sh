@@ -7,10 +7,10 @@ kubectl create namespace argocd
 # Install argocd
 kubectl apply -n argocd -f conf/install.yaml
 kubectl apply -n argocd -f conf/ingress.yml
-# Update password to mysupersecretpassword
+# Update password to admin
 kubectl -n argocd patch secret argocd-secret \
   -p '{"stringData": {
-    "admin.password": "$2y$12$Kg4H0rLL/RVrWUVhj6ykeO3Ei/YqbGaqp.jAtzzUSJdYWT6LUh/n6",
+    "admin.password": "$2a$12$xqvbSAZa9Sx/aQsDeNZXielNfB2jhBD8jPmSDiZyUqdBSJgHRZtuq",
     "admin.passwordMtime": "'$(date +%FT%T%Z)'"
   }}'
 # Create namespace for dev

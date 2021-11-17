@@ -7,14 +7,8 @@ sudo sed -i 's/ChallengeResponseAuthentication no/ChallengeResponseAuthenticatio
 sudo systemctl restart sshd
 
 # Install K3S
-sudo curl -sfL https://get.k3s.io | sh -
-# Add flannel option to use eth1
-if ! grep -q "eth1" /etc/systemd/system/k3s.service
-then
-    sed '/server \\/a\ \ \ \ --flannel-iface \"eth1\"' /etc/systemd/system/k3s.service | sudo tee /etc/systemd/system/k3s.service
-    sudo systemctl daemon-reload
-    sudo systemctl restart k3s
-fi
+sudo yum install -y http://mirror.centos.org/centos/8-stream/AppStream/aarch64/os/Packages/container-selinux-2.164.1-1.module_el8.5.0+870+f792de72.noarch.rpm
+sudo curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server --write-kubeconfig-mode '0644' --flannel-iface 'eth1'" INSTALL_K3S_VERSION="v1.22.3+k3s1" sh -
 # Add Kubernetes repo
 if ! test -f /etc/yum.repos.d/kubernetes.repo
 then
@@ -30,7 +24,8 @@ EOF
 fi
 # Install kubectl
 sudo yum install -y kubectl
-# Change permissions to k3s conf
-sudo chmod 644 /etc/rancher/k3s/k3s.yaml
+echo "source <(kubectl completion bash)" >> /home/vagrant/.bashrc
+echo "alias k=kubectl" >> /home/vagrant/.bashrc
+echo "complete -F __start_kubectl k" >> /home/vagrant/.bashrc
 # Get the token for the worker
 cp /var/lib/rancher/k3s/server/node-token /vagrant/token
