@@ -10,7 +10,6 @@ sudo apt-get install -y \
     curl \
     gnupg \
     lsb-release
-
 if ! test -f /etc/apt/sources.list.d/docker.list
 then
     curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
